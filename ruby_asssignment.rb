@@ -80,6 +80,7 @@ puts "Should total? true/false"
 t = gets.chomp
 end
 
+dis_arr.insert(0, 'id')
 test1 = students.group_by {|x| x[g] }
 if sc != 'true'
 # puts "\n--------------------------Example 1-----------------------------------------"
@@ -89,12 +90,11 @@ test1.each do |key,value|
 		new_students << k if k['year'] == y
 	end 
 end
-students_arr =  new_students.sort{|a,b| a['s']<=>b['s']}.reverse
+students_arr =  new_students.sort_by{|x| x[s]}.reverse
 dis_arr.each do |x|
 	print "#{x}\t\t\t"
 end
 puts "\n"
-i = 0
 students_arr.each do |key,value|
 	
 	dis_arr.each do|x|
@@ -104,17 +104,11 @@ students_arr.each do |key,value|
 end
 else
 test1.each do |key,value|
-	if value[1].nil?
-	 	value[1]= {}
-	 	value[1]['maths'] = 0
-	 	value[1]['physics'] = 0
-	 	value[1]['chemistry'] = 0
-    end
-	 test1[key] = value.sort{|a,b| a['s']<=>b['s']}
+	 test1[key] = value.sort_by{ |x| x[s]}.reverse 
 end
 # puts "\n--------------------------Example 2-----------------------------------------"
+
 dis_arr.push('year')
-dis_arr.insert(0, 'id')
 dis_arr.each do |x|
 	print "#{x}\t\t\t"
 end
@@ -122,16 +116,40 @@ print "\n"
 test1.each do |key, value|
 	value.each do |k,v|
 		dis_arr.each do |x|
-			print "#{k[x]}\t\t\t" if k[x] != 0 
+			print "#{k[x]}\t\t\t" 
 		end
-		puts "\n" if value[1][0] != 0
+		puts "\n" 
 	end
-	student_maths = ((value[0]['maths']-value[1]['maths']).abs*100)/value[0]['maths']
-	student_physics = ((value[0]['physics']-value[1]['physics']).abs*100)/value[0]['physics']
-	student_chemistry = ((value[0]['chemistry']-value[1]['chemistry']).abs*100)/value[0]['chemistry']
-	maths_total = value[0]['maths']+value[1]['maths']
-	physics_total = value[0]['physics']+value[1]['physics']
-	chemistry_total = value[0]['chemistry']+value[1]['chemistry']
+	student_maths =  if value[1].nil? 
+        ((value[0]['maths']).abs*100)/value[0]['maths'] 
+      else 
+        ((value[0]['maths']-value[1]['maths']).abs*100)/value[0]['maths']
+      end
+	student_physics = if value[1].nil? 
+        ((value[0]['physics']).abs*100)/value[0]['physics'] 
+      else 
+        ((value[0]['physics']-value[1]['physics']).abs*100)/value[0]['physics']
+      end
+	student_chemistry = if value[1].nil? 
+        ((value[0]['chemistry']).abs*100)/value[0]['chemistry'] 
+      else 
+        ((value[0]['chemistry']-value[1]['chemistry']).abs*100)/value[0]['chemistry']
+      end
+	maths_total = if value[1].nil?
+		value[0]['maths']
+	else
+		value[0]['maths']+value[1]['maths']
+	end
+	physics_total = if value[1].nil?
+		value[0]['physics']
+	else
+		value[0]['physics']+value[1]['physics']
+	end
+	chemistry_total = if value[1].nil?
+		value[0]['chemistry']
+	else
+		value[0]['chemistry']+value[1]['chemistry']
+	end
 	print "\nTotal\t\t\t #{maths_total}\t\t\t#{physics_total}\t\t\t#{chemistry_total}\t\t\t \n" if t == 'true'
 	print "Change\t\t\t #{student_maths}%\t\t\t#{student_physics}%\t\t\t#{student_chemistry}%\t\t\t \n"
 end
