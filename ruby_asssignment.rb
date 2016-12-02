@@ -56,102 +56,94 @@ students = [
 	"year" => 2016
 }
 ]
-new_students= []
 
+COMPARE_KEYS_MARKS = ['maths', 'physics', 'chemistry']
 puts "GROUP BY: id/department/year"
 g = gets.chomp 
 
 puts "SORT BY: maths/physics/chemistry"
-s = gets.chomp 
+s =  gets.chomp 
 
-puts "Display fields: maths,physics,chemistry"
+puts "Display: maths,physics,chemistry"
 d = gets.chomp 
 
 dis_arr = d.split(",")
 
-puts "Year: 2015/2016"
-y = gets.chomp.to_i
+puts "Year1"
+year1 = gets.chomp.to_i
+
+puts "Year2"
+year2 = gets.chomp.to_i
 
 puts "Should compare? true/false"
 sc = gets.chomp
-
-if sc == 'true'
 puts "Should total? true/false"
-t = gets.chomp
-end
+tt = gets.chomp
 
-dis_arr.insert(0, 'id')
-test1 = students.group_by {|x| x[g] }
-if sc != 'true'
-# puts "\n--------------------------Example 1-----------------------------------------"
-test1.each do |key,value|
-	
-	value.each do |k,v|
-		new_students << k if k['year'] == y
-	end 
-end
-students_arr =  new_students.sort_by{|x| x[s]}.reverse
-dis_arr.each do |x|
-	print "#{x}\t\t\t"
-end
-puts "\n"
-students_arr.each do |key,value|
-	
-	dis_arr.each do|x|
-		print "#{key[x]}\t\t\t"
+dis_arr.insert(0, 'id') if dis_arr.first != 'id'
+dis_arr.push(g) if !dis_arr.include? g
+
+group_values = students.group_by {|x| x[g] }
+
+
+	dis_arr.each{|x| print "#{x}\t\t"}
+	print "\n"
+
+
+	compare_values = students.group_by {|l| l[g]}
+	compare_values.each do |key,value|
+		 compare_values[key] = value.sort_by{ |x| x[s]} 
 	end
-	puts "\n"
-end
-else
-test1.each do |key,value|
-	 test1[key] = value.sort_by{ |x| x[s]}.reverse 
-end
-# puts "\n--------------------------Example 2-----------------------------------------"
 
-dis_arr.push('year')
-dis_arr.each do |x|
-	print "#{x}\t\t\t"
-end
-print "\n"
-test1.each do |key, value|
-	value.each do |k,v|
-		dis_arr.each do |x|
-			print "#{k[x]}\t\t\t" 
+	compare_values.each do |key, value|
+
+		value.each do |k,v|
+			dis_arr.each do |x|
+				print "#{k[x]}\t\t"
+			end
+			print "\n"
 		end
-		puts "\n" 
-	end
-	student_maths =  if value[1].nil? 
-        ((value[0]['maths']).abs*100)/value[0]['maths'] 
-      else 
-        ((value[0]['maths']-value[1]['maths']).abs*100)/value[0]['maths']
-      end
-	student_physics = if value[1].nil? 
-        ((value[0]['physics']).abs*100)/value[0]['physics'] 
-      else 
-        ((value[0]['physics']-value[1]['physics']).abs*100)/value[0]['physics']
-      end
-	student_chemistry = if value[1].nil? 
-        ((value[0]['chemistry']).abs*100)/value[0]['chemistry'] 
-      else 
-        ((value[0]['chemistry']-value[1]['chemistry']).abs*100)/value[0]['chemistry']
-      end
-	maths_total = if value[1].nil?
-		value[0]['maths']
-	else
-		value[0]['maths']+value[1]['maths']
-	end
-	physics_total = if value[1].nil?
-		value[0]['physics']
-	else
-		value[0]['physics']+value[1]['physics']
-	end
-	chemistry_total = if value[1].nil?
-		value[0]['chemistry']
-	else
-		value[0]['chemistry']+value[1]['chemistry']
-	end
-	print "\nTotal\t\t\t #{maths_total}\t\t\t#{physics_total}\t\t\t#{chemistry_total}\t\t\t \n" if t == 'true'
-	print "Change\t\t\t #{student_maths}%\t\t\t#{student_physics}%\t\t\t#{student_chemistry}%\t\t\t \n"
-end
+		if tt == 'true'
+			print "Total\t\t"
+			dis_arr.each do |y|
+				s=0
+				if COMPARE_KEYS_MARKS.include? y
+				value.collect do |x|  
+					s = s + x[y]
+					
+				end
+				print "#{s}\t\t"
+				end
+				
+			end
+			print "\n"
+		end
+		if g == 'id' && sc == 'true'
+				
+				compare_year1 = nil
+				compare_year2 = nil
+				
+				for i in 0...value.length
+					compare_year1 = value[i] if value[i]['year']  == year1 && !value[i].nil?
+					compare_year2 = value[i] if value[i]['year'] == year2 && !value[i].nil?
 
-end
+				end
+				print "Change\t\t"
+				dis_arr.each do |x|
+
+					compare_marks = 0
+					if !compare_year1.nil?
+						compare_marks = (compare_marks-compare_year1[x]).abs 
+					end
+					if !compare_year2.nil?
+						compare_marks = (compare_marks-compare_year2[x]).abs 
+					end
+					print "#{compare_marks}\t\t" if COMPARE_KEYS_MARKS.include? x
+				end
+				print "\n"
+			end
+		
+	end
+
+
+	
